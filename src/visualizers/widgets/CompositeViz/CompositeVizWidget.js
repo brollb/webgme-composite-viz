@@ -17,7 +17,6 @@ define([
     class CompositeVizWidget {
         constructor(logger, container, panelArgs) {
             this._logger = logger.fork('Widget');
-            console.log({panelArgs});
             this.$el = container;
             const config = {
                 settings: {
@@ -47,7 +46,6 @@ define([
         async initialize(layout, args) {
             this.$el.addClass(WIDGET_CLASS);
             const {visualizerDefs, config} = this.getComponentConfig();
-            console.log({config});
             const registrations = Object.entries(visualizerDefs)
                 .filter(([name, path]) => !this.isRegistered(name))
                 .map(([name, path]) => this.registerVisualizer(layout, name, path, args));
@@ -109,13 +107,11 @@ define([
 
         onActivate () {
             this._logger.debug('CompositeVizWidget has been activated');
-            console.log('CompositeVizWidget has been activated');
             this.editors.forEach(({editor}) => editor.onActivate());
         }
 
         onDeactivate () {
             this._logger.debug('CompositeVizWidget has been deactivated');
-            console.log('CompositeVizWidget has been deactivated');
             this.editors.forEach(({editor}) => editor.onDeactivate());
         }
     }
