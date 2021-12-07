@@ -25,13 +25,13 @@ define([
             this._currentNodeId = null;
             this._currentNodeParentId = undefined;
 
-            this.editors = [];
             this._logger.debug('ctor finished');
         }
 
         /* * * * * * * * Visualizer content update callbacks * * * * * * * */
         selectedObjectChanged(nodeId) {
             this._currentNodeId = nodeId;
+            this._widget.selectedObjectChanged(nodeId);
         }
 
         _stateActiveObjectChanged(model, activeObjectId) {
@@ -45,7 +45,6 @@ define([
         /* * * * * * * * Visualizer life cycle callbacks * * * * * * * */
         destroy() {
             this._detachClientEventListeners();
-            this.editors.forEach(editor => editor.destroy());
         }
 
         _attachClientEventListeners() {
@@ -65,14 +64,12 @@ define([
                     WebGMEGlobal.State.registerActiveObject(this._currentNodeId, {suppressVisualizerFromNode: true});
                 }
             }
-            this.editors.forEach(editor => editor.onActivate());
         }
 
         onDeactivate() {
             if (!this._embedded) {
                 this._detachClientEventListeners();
             }
-            this.editors.forEach(editor => editor.onDeactivate());
         }
     }
 

@@ -33,6 +33,8 @@ define([
             });
             this.layout.init();
 
+            this.editors = [];
+            this._currentNodeId = null;
             this._registeredComponentTypes = [];
             this.initialize(this.layout, panelArgs);
             this._logger.debug('ctor finished');
@@ -44,24 +46,23 @@ define([
 
         async initialize(layout, args) {
             this.$el.addClass(WIDGET_CLASS);
-            const {visualizers} = this.getComponentConfig();
-            const registrations = visualizers
-                .filter(vizConfig => !this.isRegistered(vizConfig))
-                .map(vizConfig => this.registerVisualizer(layout, vizConfig, args));
+            const {visualizerDefs, config} = this.getComponentConfig();
+            console.log({config});
+            const registrations = Object.entries(visualizerDefs)
+                .filter(([name, path]) => !this.isRegistered(name))
+                .map(([name, path]) => this.registerVisualizer(layout, name, path, args));
             await Promise.all(registrations);
 
-            const contentItems = visualizers.map(vizConfig => {
-                const {panel, layoutConfig} = vizConfig;
-                const itemConfig = Object.assign({},
-                    {type: 'component', componentName: panel}, layoutConfig);
+            layout.root.addChild(config);
 
-                return itemConfig;
-            });
+            if (this._currentNodeId !== undefined) {
+                WebGMEGlobal.State.registerActiveObject(null, {silent: true});
+                WebGMEGlobal.State.registerActiveObject(this._currentNodeId, {suppressVisualizerFromNode: true});
+            }
+        }
 
-            layout.root.addChild({
-                type: 'row',
-                content: contentItems,
-            });
+        selectedObjectChanged(nodeId) {
+            this._currentNodeId = nodeId;
         }
 
         getComponentConfig() {
@@ -70,17 +71,16 @@ define([
                 this.getComponentId(),
             );
             // TODO: add assertions here
-            return config;
+            return deepCopy(config);
         }
 
-        async registerVisualizer(layout, vizConfig, args) {
-            const {panel} = vizConfig;
-            this._registeredComponentTypes.push(panel);
+        async registerVisualizer(layout, name, panelPath, args) {
+            this._registeredComponentTypes.push(name);
 
-            const EditorPanel = await this.require(panel);
-            const Class = MakeVisualizerClass(EditorPanel, args)
+            const EditorPanel = await this.require(panelPath);
+            const Class = MakeVisualizerClass(this.editors, EditorPanel, args)
             layout.registerComponent(
-                panel,
+                name,
                 Class
             );
         }
@@ -89,37 +89,60 @@ define([
             return new Promise((resolve, reject) => require([path], resolve, reject));
         }
 
-        isRegistered(vizConfig) {
-            const {panel} = vizConfig;
-            return this._registeredComponentTypes.includes(panel);
+        isRegistered(name) {
+            return this._registeredComponentTypes.includes(name);
         }
 
-        onWidgetContainerResize (/*width, height*/) {
+        onReadOnlyChanged (readOnly) {
+            this.editors.forEach(editor => editor.onReadOnlyChanged(readOnly));
+        }
+
+        onWidgetContainerResize (width, height) {
             this._logger.debug('Widget is resizing...');
+            //this.editors.forEach(editor => editor.onResize(width, height));
         }
 
         /* * * * * * * * Visualizer life cycle callbacks * * * * * * * */
         destroy () {
-            console.log('destroy');
+            this.editors.forEach(editor => editor.destroy());
         }
 
         onActivate () {
             this._logger.debug('CompositeVizWidget has been activated');
+            console.log('CompositeVizWidget has been activated');
+            this.editors.forEach(({editor}) => editor.onActivate());
         }
 
         onDeactivate () {
             this._logger.debug('CompositeVizWidget has been deactivated');
+            console.log('CompositeVizWidget has been deactivated');
+            this.editors.forEach(({editor}) => editor.onDeactivate());
         }
     }
 
-    function MakeVisualizerClass(Editor, args) {
+    function MakeVisualizerClass(registry, Editor, args) {
         return class VisualizerClass extends VisualizerComponent {
             constructor(container, state) {
                 const editor = new Editor(...args);
+
+                // workaround since editor sizes don't adapt by default in webgme...
+                editor.$el.css('height', '100%');
+                editor.$el.css('width', '100%');
+
                 super(container, editor);
+                registry.push(this);
+            }
+
+            destroy() {
+                const index = registry.indexOf(this);
+                if (index > -1) {
+                    registry.splice(index, 1);
+                }
+                super.destroy();
             }
         };
     }
+
     class VisualizerComponent {
         constructor(container, editor) {
             container.getElement().append(editor.$el);
@@ -132,13 +155,14 @@ define([
         }
 
         onResize() {
-            this.editor.onResize(this.editor.$el.width(), this.editor.$el.height());
+            const width = this.editor.$el.parent().width();
+            const height = this.editor.$el.parent().height();
+            this.editor.onResize(width, height);
         }
     }
 
     class WelcomeComponent {
         constructor(container/*, state*/) {
-
             const element = $('<div>', {class: 'welcome'});
             element.text('No visualizers defined in config...');
             container.getElement().append(element);
@@ -146,6 +170,10 @@ define([
 
         destroy() {
         }
+    }
+
+    function deepCopy(obj) {
+        return JSON.parse(JSON.stringify(obj));
     }
 
     return CompositeVizWidget;
