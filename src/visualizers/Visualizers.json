@@ -1,0 +1,8 @@
+[
+  {
+    "id": "CompositeViz",
+    "title": "CompositeViz",
+    "panel": "panels/CompositeViz/CompositeVizPanel",
+    "DEBUG_ONLY": false
+  }
+]

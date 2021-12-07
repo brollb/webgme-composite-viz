@@ -1,0 +1,26 @@
+{
+    "CompositeViz": {
+        "visualizers": {
+            "PartBrowser": "js/Panels/PartBrowser/PartBrowserPanel",
+            "ModelEditor": "js/Panels/ModelEditor/ModelEditorPanel"
+        },
+        "config": [
+            {
+                "componentName": "PartBrowser",
+                "title": "Part Browser",
+                "width": 30,
+                "height": 100,
+                "id": "PartBrowser",
+                "isClosable": false
+            },
+            {
+                "componentName": "ModelEditor",
+                "title": "Composition",
+                "width": 70,
+                "height": 100,
+                "id": "ModelEditor",
+                "isClosable": false
+            }
+        ]
+    }
+}

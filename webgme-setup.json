@@ -1,0 +1,16 @@
+{
+  "components": {
+    "visualizers": {
+      "CompositeViz": {
+        "src": "panels/CompositeViz/CompositeVizPanel",
+        "title": "CompositeViz",
+        "panel": "src/visualizers/panels/CompositeViz",
+        "secondary": false,
+        "widget": "src/visualizers/widgets/CompositeViz"
+      }
+    }
+  },
+  "dependencies": {
+    "visualizers": {}
+  }
+}
