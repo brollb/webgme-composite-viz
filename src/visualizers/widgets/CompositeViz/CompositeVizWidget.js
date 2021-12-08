@@ -124,6 +124,7 @@ define([
                 // workaround since editor sizes don't adapt by default in webgme...
                 editor.$el.css('height', '100%');
                 editor.$el.css('width', '100%');
+                editor.$el.css('padding', 0);
 
                 super(container, editor);
                 registry.push(this);
