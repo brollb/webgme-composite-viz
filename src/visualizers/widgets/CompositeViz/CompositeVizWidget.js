@@ -3,12 +3,14 @@
 define([
     './lib/golden-layout-1.5.9/dist/goldenlayout',
     'js/Utils/ComponentSettings',
+    './DefaultSettings',
     'css!./lib/golden-layout-1.5.9/src/css/goldenlayout-base.css',
     'css!./lib/golden-layout-1.5.9/src/css/goldenlayout-light-theme.css',
     'css!./styles/CompositeVizWidget.css',
 ], function (
     GoldenLayout,
     ComponentSettings,
+    DefaultSettings,
 ) {
     'use strict';
 
@@ -63,9 +65,13 @@ define([
             this._currentNodeId = nodeId;
         }
 
+        getVisualizerConfig() {
+            // TODO: Check in the model and default to component settings/defaults
+        }
+
         getComponentConfig() {
             const config = ComponentSettings.resolveWithWebGMEGlobal(
-                {},
+                DefaultSettings,
                 this.getComponentId(),
             );
             // TODO: add assertions here
@@ -96,7 +102,9 @@ define([
         }
 
         onWidgetContainerResize (width, height) {
-            this._logger.debug('Widget is resizing...');
+            this.layout.updateSize(width, height);
+            // TODO: Update the golden layout
+            //this._logger.debug('Widget is resizing...');
             //this.editors.forEach(editor => editor.onResize(width, height));
         }
 
