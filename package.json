@@ -13,6 +13,10 @@
     "users": "node ./node_modules/webgme-engine/src/bin/usermanager.js",
     "clean_up": "node ./node_modules/webgme-engine/src/bin/clean_up.js"
   },
+  "keywords": [
+      "webgme",
+      "webgme-component"
+  ],
   "version": "1.0.0",
   "peerDependencies": {
     "webgme": "^2.23.0"
