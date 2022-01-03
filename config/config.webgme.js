@@ -21,10 +21,10 @@ config.visualization.visualizerDescriptors.push(__dirname + '/../src/visualizers
 config.requirejsPaths = {
   'panels': './src/visualizers/panels',
   'widgets': './src/visualizers/widgets',
-  'webgme-consolidated-viz': './src/common'
+  'webgme-composite-viz': './src/common'
 };
 
 
-config.mongo.uri = 'mongodb://127.0.0.1:27017/webgme_consolidated_viz';
+config.mongo.uri = 'mongodb://127.0.0.1:27017/webgme_composite_viz';
 validateConfig(config);
 module.exports = config;

@@ -2,13 +2,13 @@
 This is a [WebGME](https://webgme.org) visualizer for composing visualizers from existing visualizers (using [GoldenLayout](https://golden-layout.com/)).
 
 ## Installation
-First, install the webgme-consolidated-viz following:
+First, install the webgme-composite-viz following:
 - [NodeJS](https://nodejs.org/en/) (LTS recommended)
 - [MongoDB](https://www.mongodb.com/)
 
 Second, start mongodb locally by running the `mongod` executable in your mongodb installation (you may need to create a `data` directory or set `--dbpath`).
 
-Then, run `webgme start` from the project root to start . Finally, navigate to `http://localhost:8080` to start using webgme-consolidated-viz!
+Then, run `webgme start` from the project root to start . Finally, navigate to `http://localhost:8080` to start using webgme-composite-viz!
 
 ## Usage
 First, enable the composite visualizer for a given node. Then click on it in the visualizers panel (assuming default WebGME UI).
